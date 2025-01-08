@@ -23,9 +23,6 @@ char *free_and_return_null(char **ptr)
         free(*ptr);
         *ptr = NULL;
     }
-	else if (ptr != NULL)
-		free(ptr);
-
     return (NULL);
 }
 
@@ -113,12 +110,11 @@ char *get_next_line(int fd)
         if (bytes_read < 0)
             return (free_and_return_null(&remainder));
         if (bytes_read == 0)
-            break;
+            return (remainder);
 		buffer[bytes_read] = '\0';
-		temp = ft_strdup(remainder);
+		temp = remainder;
         remainder = ft_strjoin(remainder, buffer);
-		if (temp != NULL)
-			free(temp);
+		free_and_return_null(&temp);
 		if (!remainder) 
 			return (free_and_return_null(&remainder));
     }
@@ -129,10 +125,11 @@ char *get_next_line(int fd)
 		temp = ft_strjoin(line, "\n");
 		if (!line || !temp)
 		{
-			free(line);
+			free_and_return_null(&line);
+			free_and_return_null(&temp);
 			return (free_and_return_null(&remainder));
 		}
-		free(line);
+		free_and_return_null(&line);
 		line = temp;
 		free_and_return_null(&temp);
 
