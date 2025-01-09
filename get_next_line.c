@@ -113,7 +113,7 @@ char *get_next_line(int fd)
             return (remainder);
 		buffer[bytes_read] = '\0';
 		temp = remainder;
-        remainder = ft_strjoin(remainder, buffer);
+        remainder = ft_strjoin(remainder, buffer); // we dont free
 		free_and_return_null(&temp);
 		if (!remainder) 
 			return (free_and_return_null(&remainder));
@@ -121,19 +121,19 @@ char *get_next_line(int fd)
 	if (newline_pos)
 	{
     	*newline_pos = '\0';
-		line = ft_strdup(remainder);
-		temp = ft_strjoin(line, "\n");
-		if (!line || !temp)
+		//line = ft_strdup(remainder);
+		line = ft_strjoin(remainder, "\n"); // We dont free 
+		if (!line)// || !temp)
 		{
 			free_and_return_null(&line);
-			free_and_return_null(&temp);
+			//free_and_return_null(&temp);
 			return (free_and_return_null(&remainder));
 		}
-		free_and_return_null(&line);
-		line = temp;
-		free_and_return_null(&temp);
+		//free_and_return_null(&line);
+		//line = temp;
+		//free_and_return_null(&temp);
 
-		temp = remainder;
+		temp = remainder; //why
     	remainder = ft_strdup(newline_pos + 1);
 		if (!remainder)
 			free(temp);
@@ -147,7 +147,7 @@ char *get_next_line(int fd)
 	return (line);
 }
 
-/*
+
 int main()
 {
 	int fd = open("C:\\Users\\Orhan\\Desktop\\GetNextLine\\wewe.txt", 0);
@@ -164,4 +164,4 @@ int main()
 	i = get_next_line(fd); 
 	printf("%s", i);
 
-}*/
+}
