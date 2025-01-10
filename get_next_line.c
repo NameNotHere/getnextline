@@ -16,14 +16,14 @@ int	len(const char *s)
 	return (i);
 }
 
-char *free_and_return_null(char **ptr)
+char	*free_and_return_null(char **ptr)
 {
-    if (*ptr)
-    {
-        free(*ptr);
-        *ptr = NULL;
-    }
-    return (NULL);
+	if (*ptr)
+	{
+		free(*ptr);
+		*ptr = NULL;
+	}
+	return (NULL);
 }
 
 char	*ft_strdup(const char *str)
@@ -32,6 +32,8 @@ char	*ft_strdup(const char *str)
 	char	*dup;
 
 	size = 0;
+	if (!str)
+		return (NULL);
 	while (str[size] != '\0')
 		size++;
 	dup = malloc(sizeof(char) * (size + 1));
@@ -47,21 +49,25 @@ char	*ft_strdup(const char *str)
 	return (dup);
 }
 
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*new;
 	int		i;
 	int		j;
 
 	new = (char *) malloc(len(s1) + len(s2) + 1);
-	if (!new || !s1 || !s2)
+	if (!new || (!s1 && !s2))
 		return (NULL);
+	if (!s1)
+		return (s2);
+	if (!s2)
+		return (s1);
 	i = 0;
-    while (s1[i])
-    {
-        new[i] = s1[i];
-        i++;
-    }
+	while (s1[i])
+	{
+		new[i] = s1[i];
+		i++;
+	}
 	j = 0;
 	while (s2[j] != '\0')
 	{
@@ -88,7 +94,7 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
     static char *remainder;
     char buffer[BUFFER_SIZE];
@@ -100,57 +106,61 @@ char *get_next_line(int fd)
 	newline_pos = NULL;
 	line = NULL;
 	temp = NULL;
+	bytes_read = 1;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!remainder)
 		remainder = ft_strdup("");
-    while ((newline_pos = ft_strchr(remainder, '\n')) == NULL)
-    {
-        bytes_read = read(fd, buffer, BUFFER_SIZE);
-        if (bytes_read < 0)
-            return (free_and_return_null(&remainder));
-        if (bytes_read == 0)
-            return (remainder);
+	if (!remainder)
+		return (NULL);
+	while (bytes_read > 0 && (newline_pos = ft_strchr(remainder, '\n')) == NULL)
+	{
+		bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (bytes_read < 0)
+		{
+			if (remainder)
+				free_and_return_null(&remainder);
+			remainder = NULL;
+			return (NULL);
+		}
+		if (bytes_read == 0)
+		{
+			line = remainder;
+			if (remainder)
+				free_and_return_null(&remainder);
+			remainder = NULL;
+			return (line);
+		}
 		buffer[bytes_read] = '\0';
-		temp = remainder;
-        remainder = ft_strjoin(remainder, buffer); // we dont free
-		free_and_return_null(&temp);
-		if (!remainder) 
-			return (free_and_return_null(&remainder));
-    }
+		if (remainder)
+		{
+			temp = remainder;
+			remainder = ft_strjoin(remainder, buffer);
+			if (temp)
+				free_and_return_null(&temp);
+		}
+	}
 	if (newline_pos)
 	{
-    	*newline_pos = '\0';
-		//line = ft_strdup(remainder);
-		line = ft_strjoin(remainder, "\n"); // We dont free 
-		if (!line)// || !temp)
-		{
-			free_and_return_null(&line);
-			//free_and_return_null(&temp);
-			return (free_and_return_null(&remainder));
-		}
-		//free_and_return_null(&line);
-		//line = temp;
-		//free_and_return_null(&temp);
-
-		temp = remainder; //why
-    	remainder = ft_strdup(newline_pos + 1);
-		if (!remainder)
-			free(temp);
+		*newline_pos = '\0';
+		line = ft_strjoin(remainder, "\n");
+		if (remainder)
+			free_and_return_null(&remainder);
+		remainder = ft_strdup(newline_pos + 1);
 	}
-	else
+	else if (remainder)
 	{
 		line = ft_strdup(remainder);
-		if (!line)
-			return (free_and_return_null(&remainder));
+		free(remainder);
+		remainder = NULL;
 	}
 	return (line);
 }
 
-
+/*
 int main()
 {
-	int fd = open("C:\\Users\\Orhan\\Desktop\\GetNextLine\\wewe.txt", 0);
+	int fd = open("/home/otanovic/Desktop/GetNextLine/wewe.txt", 0);
 	if (fd < 0)
 	{
    		perror("Error opening file");
@@ -164,4 +174,4 @@ int main()
 	i = get_next_line(fd); 
 	printf("%s", i);
 
-}
+}*/
