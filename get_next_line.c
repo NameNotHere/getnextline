@@ -32,6 +32,7 @@ char	*ft_strdup(const char *str)
 	char	*dup;
 
 	size = 0;
+	dup = NULL;
 	if (!str)
 		return (NULL);
 	while (str[size] != '\0')
@@ -97,15 +98,15 @@ char	*ft_strchr(const char *s, int c)
 char	*get_next_line(int fd)
 {
     static char *remainder;
-    char buffer[BUFFER_SIZE + 2];
+    char buffer[BUFFER_SIZE + 1]; // you need to malloc this some zies done work w +1
     char *line;
     char *newline_pos;
     ssize_t bytes_read;
-	char *temp;
+	//char *temp;
 
 	newline_pos = NULL;
 	line = NULL;
-	temp = NULL;
+	//temp = NULL;
 	bytes_read = 1;
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
@@ -113,8 +114,9 @@ char	*get_next_line(int fd)
 		remainder = ft_strdup("");
 	if (!remainder)
 		return (NULL);
-	while (bytes_read > 0 && (newline_pos = ft_strchr(remainder, '\n')) == NULL)
+	while (bytes_read > 0 && newline_pos == NULL)
 	{
+		newline_pos = ft_strchr(remainder, '\n');
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
 		{
@@ -123,41 +125,27 @@ char	*get_next_line(int fd)
 			return (NULL);
 		}
 		if (bytes_read == 0)
-		{
-			line = remainder;
-			remainder = NULL;
-			return (line);
-		}
+			return (remainder);
 		buffer[bytes_read] = '\0';
 		if (remainder)
 		{
-			temp = remainder;
+			if (remainder)
+				free_and_return_null(&remainder);
 			remainder = ft_strjoin(remainder, buffer);
-			free_and_return_null(&temp);
 			if (!remainder)
 				return (NULL);
 		}
 	}
 	if (newline_pos)
 	{
-		*newline_pos = '\0';
-		line = ft_strjoin(remainder, "\n");
-		free_and_return_null(&remainder);
-		if (!line)
-			return (NULL);
+		if (remainder)
+			free_and_return_null(&remainder);
 		remainder = ft_strdup(newline_pos + 1);
 		if (!remainder)
-		{
-			free_and_return_null(&line);
 			return (NULL);
-		}
 	}
 	else if (remainder)
-	{
-		line = ft_strdup(remainder);
-		free(remainder);
-		remainder = NULL;
-	}
+		line = remainder;
 	return (line);
 }
 
@@ -173,9 +161,8 @@ int main()
 
 	char *i = get_next_line(fd);
 	printf("%s", i);
+	free(i);
 	i = get_next_line(fd);
 	printf("%s", i);
-	i = get_next_line(fd); 
-	printf("%s", i);
-
+	//free(i);
 }*/
