@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 4
+#define BUFFER_SIZE 1
 #endif
 
 int	ft_len(const char *s)
@@ -102,10 +102,11 @@ char	*ft_strchr(const char *s, int c, int MAX)
 	return (NULL);
 }
 
-char	*get_next_line(int fd)
+char	*get_next_line(int fd) //if buffer size is too big I dont read the whole file with nl
+//also I dont read the last line
 {
 	ssize_t		bytes_read;
-	char		buffer[BUFFER_SIZE];
+	char		buffer[BUFFER_SIZE + 1];
 	char		*newline_pos;
 	char		*line;
 	static char	*remainder;
@@ -141,6 +142,7 @@ char	*get_next_line(int fd)
 			return (line);
 		}
 	}
+	// this is never read lmao
 	if (bytes_read == 0 && remainder && remainder[0] != '\0')
 	{
 		line = ft_strdup(remainder);
