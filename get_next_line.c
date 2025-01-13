@@ -6,11 +6,13 @@
 #define BUFFER_SIZE 4
 #endif
 
-int	len(const char *s)
+int	ft_len(const char *s)
 {
 	int	i;
 
 	i = 0;
+	if (s == NULL)
+		return (0);
 	while (s[i] != '\0')
 		i++;
 	return (i);
@@ -56,13 +58,16 @@ char	*ft_strjoin(char *s1, char *s2)
 	int		i;
 	int		j;
 
-	new = (char *) malloc(len(s1) + len(s2) + 1);
-	if (!new || (!s1 && !s2))
-		return (NULL);
+	if (!s1 && !s2)
+		return NULL;
 	if (!s1)
-		return (s2);
+		return ft_strdup(s2);
 	if (!s2)
-		return (s1);
+		return ft_strdup(s1);
+
+	new = (char *) malloc(ft_len(s1) + ft_len(s2) + 1);
+	if (!new)
+		return (NULL);
 	i = 0;
 	while (s1[i])
 	{
@@ -79,12 +84,14 @@ char	*ft_strjoin(char *s1, char *s2)
 	return (new);
 }
 
-char	*ft_strchr(const char *s, int c)
+char	*ft_strchr(const char *s, int c, int MAX)
 {
 	int		i;
 
 	i = 0;
-	while (s[i] != '\0')
+	if (s == NULL)
+		return (NULL);
+	while (s[i] != '\0' && i < MAX)
 	{
 		if (s[i] == (char)c)
 			return ((char *)(s + i));
@@ -97,72 +104,49 @@ char	*ft_strchr(const char *s, int c)
 
 char	*get_next_line(int fd)
 {
-    static char *remainder;
-    char buffer[BUFFER_SIZE + 1]; // you need to malloc this some zies done work w +1
-    char *line;
-    char *newline_pos;
-    ssize_t bytes_read;
-	//char *temp;
+	ssize_t		bytes_read;
+	char		buffer[BUFFER_SIZE];
+	char		*newline_pos;
+	char		*line;
+	static char	*remainder;
+	char *temp;
 
-	newline_pos = NULL;
-	line = NULL;
-	//temp = NULL;
 	bytes_read = 1;
-	if (fd < 0 || BUFFER_SIZE <= 0)
-		return (NULL);
 	if (!remainder)
 		remainder = ft_strdup("");
-	if (!remainder)
-		return (NULL);
-	while (bytes_read > 0 && newline_pos == NULL)
+	while (bytes_read > 0)
 	{
-		newline_pos = ft_strchr(remainder, '\n');
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
-		{
-			if (remainder)
-				free_and_return_null(&remainder);
 			return (NULL);
-		}
 		if (bytes_read == 0)
-			return (remainder);
+			break ;
 		buffer[bytes_read] = '\0';
-		if (remainder)
+
+		temp = remainder;
+		remainder = ft_strjoin(remainder, buffer);
+		free_and_return_null(&temp); 
+
+		newline_pos = ft_strchr(remainder, '\n', ft_len(remainder));
+		if (newline_pos)
 		{
-			if (remainder)
-				free_and_return_null(&remainder);
-			remainder = ft_strjoin(remainder, buffer);
-			if (!remainder)
-				return (NULL);
+			*newline_pos = '\0';
+			line = ft_strdup(remainder);
+			temp = ft_strdup(newline_pos + 1);
+			free_and_return_null(&remainder);
+			remainder = temp;
+			temp = line;
+			line = ft_strjoin(line, "\n");
+			free_and_return_null(&temp);
+			return (line);
 		}
 	}
-	if (newline_pos)
+	if (bytes_read == 0 && remainder && remainder[0] != '\0')
 	{
-		if (remainder)
-			free_and_return_null(&remainder);
-		remainder = ft_strdup(newline_pos + 1);
-		if (!remainder)
-			return (NULL);
+		line = ft_strdup(remainder);
+		free_and_return_null(&remainder);
+		return (line);
 	}
-	else if (remainder)
-		line = remainder;
-	return (line);
+
+	return (NULL);
 }
-
-/*
-int main()
-{
-	int fd = open("/home/otanovic/Desktop/GetNextLine/wewe.txt", 0);
-	if (fd < 0)
-	{
-   		perror("Error opening file");
-    	return 1;
-	}
-
-	char *i = get_next_line(fd);
-	printf("%s", i);
-	free(i);
-	i = get_next_line(fd);
-	printf("%s", i);
-	//free(i);
-}*/
