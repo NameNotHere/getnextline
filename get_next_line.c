@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 1
+#define BUFFER_SIZE 42
 #endif
 
 int	ft_len(const char *s)
@@ -64,7 +64,6 @@ char	*ft_strjoin(char *s1, char *s2)
 		return ft_strdup(s2);
 	if (!s2)
 		return ft_strdup(s1);
-
 	new = (char *) malloc(ft_len(s1) + ft_len(s2) + 1);
 	if (!new)
 		return (NULL);
@@ -102,17 +101,19 @@ char	*ft_strchr(const char *s, int c, int MAX)
 	return (NULL);
 }
 
-char	*get_next_line(int fd) //if buffer size is too big I dont read the whole file with nl
-//also I dont read the last line
+char	*get_next_line(int fd)
 {
 	ssize_t		bytes_read;
-	char		buffer[BUFFER_SIZE + 1];
+	static char		buffer[BUFFER_SIZE + 1];
 	char		*newline_pos;
 	char		*line;
 	static char	*remainder;
 	char *temp;
 
+	line = "";
 	bytes_read = 1;
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
 	if (!remainder)
 		remainder = ft_strdup("");
 	while (bytes_read > 0)
@@ -120,14 +121,11 @@ char	*get_next_line(int fd) //if buffer size is too big I dont read the whole fi
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
 			return (NULL);
-		if (bytes_read == 0)
-			break ;
 		buffer[bytes_read] = '\0';
 
-		temp = remainder;
-		remainder = ft_strjoin(remainder, buffer);
-		free_and_return_null(&temp); 
-
+		temp = ft_strjoin(remainder, buffer);
+		free_and_return_null(&remainder);
+		remainder = temp;
 		newline_pos = ft_strchr(remainder, '\n', ft_len(remainder));
 		if (newline_pos)
 		{
@@ -139,16 +137,21 @@ char	*get_next_line(int fd) //if buffer size is too big I dont read the whole fi
 			temp = line;
 			line = ft_strjoin(line, "\n");
 			free_and_return_null(&temp);
+			if (line[0] == '\0')
+			{
+				temp = line;
+				line = ft_strjoin(line, "\n");
+				free_and_return_null(&temp);
+			}
 			return (line);
 		}
 	}
-	// this is never read lmao
 	if (bytes_read == 0 && remainder && remainder[0] != '\0')
 	{
 		line = ft_strdup(remainder);
 		free_and_return_null(&remainder);
 		return (line);
 	}
-
+	free_and_return_null(&remainder);
 	return (NULL);
 }
