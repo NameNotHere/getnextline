@@ -6,7 +6,7 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:02 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/14 16:27:05 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/14 16:34:07 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,7 @@ char	*get_next_line(int fd)
 		free_and_return_null(&remainder);
 		remainder = temp;
 		newline_pos = ft_strchr(remainder, '\n', ft_len(remainder));
-		if (newline_pos)
+		if (newline_pos) // put this into a function
 		{
 			*newline_pos = '\0';
 			line = ft_strdup(remainder);
