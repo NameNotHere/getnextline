@@ -60,6 +60,7 @@
 	"get_next_line.h": "c",
 	"stdlib.h": "c",
 	"unistd.h": "c",
-	"cmath": "c"
+	"cmath": "c",
+	"stdio.h": "c"
 }
 }

@@ -1,9 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/01/14 15:52:02 by otanovic          #+#    #+#             */
+/*   Updated: 2025/01/14 16:18:48 by otanovic         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 42
+# define BUFFER_SIZE 42
 #endif
 
 int	ft_len(const char *s)
@@ -59,11 +71,11 @@ char	*ft_strjoin(char *s1, char *s2)
 	int		j;
 
 	if (!s1 && !s2)
-		return NULL;
+		return (NULL);
 	if (!s1)
-		return ft_strdup(s2);
+		return (ft_strdup(s2));
 	if (!s2)
-		return ft_strdup(s1);
+		return (ft_strdup(s1));
 	new = (char *) malloc(ft_len(s1) + ft_len(s2) + 1);
 	if (!new)
 		return (NULL);
@@ -104,7 +116,7 @@ char	*ft_strchr(const char *s, int c, int MAX)
 char	*get_next_line(int fd)
 {
 	ssize_t		bytes_read;
-	static char		buffer[BUFFER_SIZE + 1];
+	static char	buffer[BUFFER_SIZE + 1];
 	char		*newline_pos;
 	char		*line;
 	static char	*remainder;
@@ -120,13 +132,29 @@ char	*get_next_line(int fd)
 	{
 		bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (bytes_read < 0)
+		{
+			free_and_return_null(&remainder);
 			return (NULL);
+		}
 		buffer[bytes_read] = '\0';
-
 		temp = ft_strjoin(remainder, buffer);
 		free_and_return_null(&remainder);
 		remainder = temp;
 		newline_pos = ft_strchr(remainder, '\n', ft_len(remainder));
+		/*if (newline_pos)
+		{
+			*newline_pos = '\0';
+			line = ft_strdup(remainder);
+			temp = ft_strdup(newline_pos + 1);
+			free_and_return_null(&remainder);
+			remainder = temp;
+			temp = line;
+			line = ft_strjoin(line, "\n");
+			free_and_return_null(&temp);
+			if (!line)
+				return (free_and_return_null(&remainder));
+			return (line);
+		}*/
 		if (newline_pos)
 		{
 			*newline_pos = '\0';
@@ -137,12 +165,8 @@ char	*get_next_line(int fd)
 			temp = line;
 			line = ft_strjoin(line, "\n");
 			free_and_return_null(&temp);
-			if (line[0] == '\0')
-			{
-				temp = line;
-				line = ft_strjoin(line, "\n");
-				free_and_return_null(&temp);
-			}
+			if (!line)
+				return (free_and_return_null(&remainder));
 			return (line);
 		}
 	}
