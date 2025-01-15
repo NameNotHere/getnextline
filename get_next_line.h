@@ -6,9 +6,17 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:16 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/14 16:34:10 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/15 14:58:24 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+typedef struct t_buffer_info
+{
+	ssize_t	bytes_read;
+	char	*newline_pos;
+	char	*buffer;
+	int		fd;
+}	t_buffer_info;
 
 int		len(const char *s);
 char	*get_next_line(int fd);
