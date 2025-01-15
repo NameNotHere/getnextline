@@ -6,14 +6,14 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:02 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/15 15:03:01 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/15 17:43:56 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
-#include <get_next_line.h>
+//#include <sys/types.h>
 
 #ifndef BUFFER_SIZE
 # define BUFFER_SIZE 42
@@ -26,7 +26,7 @@ int	ft_len(const char *s)
 	i = 0;
 	if (s == NULL)
 		return (0);
-	while (s[i] != '\0')
+	while (s && s[i] != '\0')
 		i++;
 	return (i);
 }
@@ -114,78 +114,51 @@ char	*ft_strchr(const char *s, int c, int MAX)
 	return (NULL);
 }
 
-int	loop(char *remainder, char *line, t_buffer_info buffer)
+char	*process_line(int fd, ssize_t *bytes_read)
 {
-	char	*temp;
-	char	*newline_pos;
+	char			buffer[BUFFER_SIZE + 1];
+	char			*newline_pos;
+	char			*temp;
+	static char		*remainder;
+	char			*line;
 
-	buffer.bytes_read = read(buffer.fd, buffer.buffer, BUFFER_SIZE);
-	if (buffer.bytes_read < 0)
-		return (free_and_return_null(&remainder));
-	buffer.buffer[buffer.bytes_read] = '\0';
-	temp = ft_strjoin(remainder, buffer.buffer);
-	free_and_return_null(&remainder);
-	remainder = temp;
-	newline_pos = ft_strchr(remainder, '\n', ft_len(remainder));
-	if (buffer.newline_pos)
+	if (!remainder)
+		remainder = ft_strdup("");
+
+	while (*bytes_read > 0)
 	{
-		*newline_pos = '\0';
-		line = ft_strdup(remainder);
-		temp = ft_strdup(newline_pos + 1);
-		free_and_return_null(&remainder);
-		remainder = temp;
-		temp = line;
-		line = ft_strjoin(line, "\n");
-		free_and_return_null(&temp);
-		return (line);
+		*bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (*bytes_read == 0)
+			break ;
+		buffer[*bytes_read] = '\0';
+
+		newline_pos = ft_strchr(buffer, '\n', BUFFER_SIZE);
+		if (newline_pos)
+		{
+			*newline_pos = '\0';
+			remainder = ft_strdup(newline_pos + 1); // you need to free remainder and maybe no if
+		}
+
+		line = ft_strjoin(remainder, buffer);
+		if (newline_pos)
+		{
+			line = ft_strjoin(line , "\n");
+			break ;
+		}
 	}
+	return (line);
 }
 
 char	*get_next_line(int fd)
 {
 	ssize_t		bytes_read;
-	//static char	buffer[BUFFER_SIZE + 1];
-	buffer buffer;
-	//char		*newline_pos;
 	char		*line;
-	static char	*remainder;
-	//char *temp;
 
-	bytes_read = 1;
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd <= 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	if (!remainder)
-		remainder = ft_strdup("");
-	while (bytes_read > 0)
-	{
-		/*bytes_read = read(fd, buffer, BUFFER_SIZE);
-		if (bytes_read < 0)
-			return (free_and_return_null(&remainder));
-		buffer[bytes_read] = '\0';
-		temp = ft_strjoin(remainder, buffer);
-		free_and_return_null(&remainder);
-		remainder = temp;
-		newline_pos = ft_strchr(remainder, '\n', ft_len(remainder));
-		if (newline_pos) // put this into a function
-		{
-			*newline_pos = '\0';
-			line = ft_strdup(remainder);
-			temp = ft_strdup(newline_pos + 1);
-			free_and_return_null(&remainder);
-			remainder = temp;
-			temp = line;
-			line = ft_strjoin(line, "\n");
-			free_and_return_null(&temp);
-			return (line);
-		}*/
-		loop(remainder, line, buffer);
-	}
-	if (bytes_read == 0 && remainder && remainder[0] != '\0')
-	{
-		line = ft_strdup(remainder);
-		free_and_return_null(&remainder);
-		return (line);
-	}
-	free_and_return_null(&remainder);
-	return (NULL);
+	bytes_read = 1;
+	line = process_line(fd, &bytes_read);
+	if (!line)
+		return (NULL);
+	return (line);
 }
