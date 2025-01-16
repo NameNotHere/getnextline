@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <fcntl.h>
+#include "get_next_line.h"
 
 int main()
 {
@@ -15,11 +16,12 @@ int main()
     	return 1;
 	}
 
-	while ((ret = get_next_line(fd)))
+	while (i < 8)
 	{
+		ret = get_next_line(fd);
 		printf("%d %s", ++i, ret);
 		free(ret);
-		if (ret == NULL)
-			break;
+		//if (ret == NULL)
+		//	break;
 	}
 }
