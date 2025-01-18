@@ -6,7 +6,7 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:02 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/18 14:05:47 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/18 18:31:25 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,24 +26,35 @@ char	*process_remainder(int fd, ssize_t *bytes_read, char **remainder)
 	char	*temp;
 	char	buffer[BUFFER_SIZE + 1];
 
-	while (*bytes_read > 0 || *remainder)
+	newline_pos = NULL;
+	while (*bytes_read > 0 || (*remainder && (*remainder)[0] != '\0'))
 	{
 		*bytes_read = read(fd, buffer, BUFFER_SIZE);
+		if (*bytes_read <= 0)
+			return (NULL);
 		buffer[*bytes_read] = '\0';
 		temp = *remainder;
 		*remainder = ft_strjoin(*remainder, buffer);
 		free_and_return_null(&temp);
-		newline_pos = ft_strchr(*remainder, '\n');
+		if (remainder)
+			newline_pos = ft_strchr(*remainder, '\n');
 		if (newline_pos)
 		{
 			*newline_pos = '\0';
 			temp = *remainder;
-			if (newline_pos && newline_pos[1] != '\0')
-				*remainder = ft_strdup(newline_pos + 1);
+			*remainder = ft_strdup(newline_pos + 1);
 			line = ft_strjoin(temp, "\n");
 			free_and_return_null(&temp);
 			return (line);
 		}
+		if (*remainder && (*remainder)[0] != '\0' && *bytes_read == 0)
+		{
+			line = ft_strdup(*remainder);
+			free_and_return_null(remainder);
+			return (line);
+		}
+		if (*bytes_read <= 0)
+			return (NULL);
 	}
 	return (NULL);
 }
@@ -62,6 +73,8 @@ char	*process_line(int fd, ssize_t *bytes_read)
 		free_and_return_null(&remainder);
 		return (line);
 	}
+	if (!line)
+		return (NULL);
 	return (line);
 }
 

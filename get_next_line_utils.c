@@ -6,7 +6,7 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:12 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/18 14:04:55 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/18 16:54:03 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	ft_len(char *s)
 
 char	*free_and_return_null(char **ptr)
 {
-	if (*ptr)
+	if (*ptr && ptr)
 	{
 		free(*ptr);
 		*ptr = NULL;
@@ -67,14 +67,14 @@ char	*ft_strjoin(char *s1, char *s2)
 	int		j;
 
 	if (!s1 && !s2)
-		return (NULL);
+		return (ft_strdup(""));
 	if (!s1)
-		return (s2);
+		return (ft_strdup(s2));
 	if (!s2)
-		return (s1);
+		return (ft_strdup(s1));
 	new = (char *) malloc(ft_len(s1) + ft_len(s2) + 1);
 	if (!new)
-		return (NULL);
+		return (ft_strdup(""));
 	i = 0;
 	while (s1[i])
 	{
