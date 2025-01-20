@@ -6,7 +6,7 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:02 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/18 18:31:25 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/20 13:20:17 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@ char	*process_remainder(int fd, ssize_t *bytes_read, char **remainder)
 	{
 		*bytes_read = read(fd, buffer, BUFFER_SIZE);
 		if (*bytes_read <= 0)
-			return (NULL);
+			break ;
 		buffer[*bytes_read] = '\0';
 		temp = *remainder;
 		*remainder = ft_strjoin(*remainder, buffer);
 		free_and_return_null(&temp);
-		if (remainder)
+		if (*remainder)
 			newline_pos = ft_strchr(*remainder, '\n');
 		if (newline_pos)
 		{
@@ -53,8 +53,6 @@ char	*process_remainder(int fd, ssize_t *bytes_read, char **remainder)
 			free_and_return_null(remainder);
 			return (line);
 		}
-		if (*bytes_read <= 0)
-			return (NULL);
 	}
 	return (NULL);
 }
