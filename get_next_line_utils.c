@@ -6,7 +6,7 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:12 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/20 13:10:03 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/20 17:43:38 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ char	*ft_strdup(const char *str)
 
 	size = 0;
 	dup = NULL;
-	if (!str)
+	if (str == NULL)
 		return (NULL);
 	while (str[size] != '\0')
 		size++;
@@ -60,28 +60,24 @@ char	*ft_strdup(const char *str)
 	return (dup);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+char	*ft_strjoin(char *s1, char *s2, int i, int j)
 {
 	char	*new;
-	int		i;
-	int		j;
 
-	if (!s1 && !s2)
+	if (s1 == NULL && s2 == NULL)
 		return (ft_strdup(""));
-	if (!s1)
+	if (s1 == NULL && s2 != NULL)
 		return (ft_strdup(s2));
-	if (!s2)
+	if (s2 == NULL && s1 != NULL)
 		return (ft_strdup(s1));
 	new = (char *) malloc(ft_len(s1) + ft_len(s2) + 1);
 	if (!new)
 		return (ft_strdup(""));
-	i = 0;
 	while (s1[i] != '\0')
 	{
 		new[i] = s1[i];
 		i++;
 	}
-	j = 0;
 	while (s2[j] != '\0')
 	{
 		new[i + j] = s2[j];
