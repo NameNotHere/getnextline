@@ -6,7 +6,7 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:02 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/20 18:21:07 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/21 16:23:36 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,10 @@ void	get_the_line(char	**remainder, ssize_t *bytes_read, int fd)
 	{
 		buffer[*bytes_read] = '\0';
 		temp = *remainder;
-		if (*remainder)
-			*remainder = ft_strjoin(*remainder, buffer, 0, 0);
-		else
+		if (!*remainder)
 			*remainder = ft_strdup(buffer);
+		else
+			*remainder = ft_strjoin(*remainder, buffer, 0, 0);
 		free_and_return_null(&temp);
 	}
 }
