@@ -6,7 +6,7 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:02 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/21 19:24:39 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/22 12:32:55 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,10 @@
 void	*get_the_line(char	**remainder, ssize_t *bytes_read, int fd)
 {
 	char		*temp;
-	static char	buffer[BUFFER_SIZE + 1];
+	static char	buffer[BUFFER_SIZE];
 
 	*bytes_read = read(fd, buffer, BUFFER_SIZE);
-	if (*bytes_read > 0)
+	if (*bytes_read >= 0)
 	{
 		buffer[*bytes_read] = '\0';
 		if (!*remainder)
@@ -78,8 +78,6 @@ char	*process_line(int fd, ssize_t *bytes_read)
 	static char		*remainder;
 	char			*line;
 
-	if (fd <= 0 || BUFFER_SIZE <= 0)
-		return (free_and_return_null(&remainder));
 	if (!remainder)
 		remainder = ft_strdup("");
 	line = process_remainder(fd, bytes_read, &remainder, NULL);
@@ -98,7 +96,7 @@ char	*get_next_line(int fd)
 	ssize_t			bytes_read;
 	char			*line;
 
-	if (fd <= 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	bytes_read = 1;
 	line = process_line(fd, &bytes_read);
