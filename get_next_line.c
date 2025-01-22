@@ -6,7 +6,7 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:02 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/22 12:32:55 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/22 20:04:24 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # define BUFFER_SIZE 50
 #endif
 
-void	*get_the_line(char	**remainder, ssize_t *bytes_read, int fd)
+void	get_the_line(char	**remainder, ssize_t *bytes_read, int fd)
 {
 	char		*temp;
 	static char	buffer[BUFFER_SIZE];
@@ -34,15 +34,15 @@ void	*get_the_line(char	**remainder, ssize_t *bytes_read, int fd)
 		{
 			temp = *remainder;
 			*remainder = ft_strjoin(*remainder, buffer, 0, 0);
+			free_and_return_null(&temp);
 		}
-		free_and_return_null(&temp);
-		return (remainder);
+		//return (remainder);
 	}
-	return (NULL);
+//	return (NULL);
 }
 
 char	*process_remainder(int fd, ssize_t *bytes_read, char **remainder, \
-	char	*newline_pos)
+	char *newline_pos)
 {
 	char	*line;
 	char	*temp;
@@ -50,6 +50,7 @@ char	*process_remainder(int fd, ssize_t *bytes_read, char **remainder, \
 	while (*bytes_read > 0 || (remainder && (*remainder)[0] != '\0'))
 	{
 		get_the_line(remainder, bytes_read, fd);
+
 		newline_pos = ft_strchr(*remainder, '\n');
 		if (newline_pos)
 		{
@@ -96,7 +97,7 @@ char	*get_next_line(int fd)
 	ssize_t			bytes_read;
 	char			*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd > 9223372)
 		return (NULL);
 	bytes_read = 1;
 	line = process_line(fd, &bytes_read);
