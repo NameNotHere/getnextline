@@ -6,11 +6,10 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:12 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/23 15:01:07 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/23 16:16:52 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
