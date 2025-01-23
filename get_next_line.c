@@ -6,12 +6,11 @@
 /*   By: otanovic <otanovic@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/01/14 15:52:02 by otanovic          #+#    #+#             */
-/*   Updated: 2025/01/23 16:02:32 by otanovic         ###   ########.fr       */
+/*   Updated: 2025/01/23 16:16:04 by otanovic         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include <stdio.h>
 #include "get_next_line.h"
 
 #ifndef BUFFER_SIZE
